@@ -1,122 +1,53 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
-class Student {
-    private String name;
-    private int rollNumber;
-    private String grade;
-
-    public Student(String name, int rollNumber, String grade) {
-        this.name = name;
-        this.rollNumber = rollNumber;
-        this.grade = grade;
-    }
-
-    public int getRollNumber() {
-        return rollNumber;
-    }
-
-    @Override
-    public String toString() {
-        return "Name: " + name + ", Roll Number: " + rollNumber + ", Grade: " + grade;
-    }
-}
-
 public class NumberGame {
-    private List<Student> students = new ArrayList<>();
+    private static final int MAX_ATTEMPTS = 10;
+    private static final int LOWER_BOUND = 1; 
+    private static final int UPPER_BOUND = 100;
 
     public static void main(String[] args) {
-        NumberGame system = new NumberGame();
         Scanner scanner = new Scanner(System.in);
-
-        int choice;
-
+        Random random = new Random();
+        boolean playAgain;
+        int totalRounds = 0;
+        int totalWins = 0;
+        
         do {
-            System.out.println("Student Management System");
-            System.out.println("1. Add Student");
-            System.out.println("2. Remove Student");
-            System.out.println("3. Search Student");
-            System.out.println("4. Display All Students");
-            System.out.println("5. Exit");
-            System.out.println("Enter your choice:");
-            choice = scanner.nextInt();
+            totalRounds++;
+            int numberToGuess = random.nextInt(UPPER_BOUND - LOWER_BOUND + 1) + LOWER_BOUND;
+            boolean guessedCorrectly = false;
+            int attempts = 0;
 
-            switch (choice) {
-                case 1:
-                    System.out.print("Enter Student name: ");
-                    String name = scanner.next();
-                    System.out.print("Enter roll number: ");
-                    int rollNumber = scanner.nextInt();
-                    System.out.print("Enter grade: ");
-                    String grade = scanner.next();
+            System.out.println("Guess the number between " + LOWER_BOUND + " and " + UPPER_BOUND + ":");
+            
+            while (attempts < MAX_ATTEMPTS && !guessedCorrectly) {
+                System.out.print("Enter your guess (" + (MAX_ATTEMPTS - attempts) + " attempts left): ");
+                int userGuess = scanner.nextInt();
+                attempts++;
 
-                    Student newStudent = new Student(name, rollNumber, grade);
-                    system.addStudent(newStudent);
-                    System.out.println("Student added successfully!");
-                    break;
-
-                case 2:
-                    System.out.print("Enter roll number of Student to remove: ");
-                    int removeRollNumber = scanner.nextInt();
-                    Student studentToRemove = system.searchStudent(removeRollNumber);
-
-                    if (studentToRemove != null) {
-                        system.removeStudent(studentToRemove);
-                        System.out.println("Student removed successfully!");
-                    } else {
-                        System.out.println("Student not found.");
-                    }
-                    break;
-
-                case 3:
-                    System.out.print("Enter roll number of student to search: ");
-                    int searchRollNumber = scanner.nextInt();
-                    Student foundStudent = system.searchStudent(searchRollNumber);
-
-                    if (foundStudent != null) {
-                        System.out.println("Student found: " + foundStudent);
-                    } else {
-                        System.out.println("Student not found.");
-                    }
-                    break;
-
-                case 4:
-                    system.displayAllStudents();
-                    break;
-
-                case 5:
-                    System.out.println("Exiting Student Management System. Goodbye!");
-                    break;
-
-                default:
-                    System.out.println("Invalid choice. Please enter a valid option.");
+                if (userGuess == numberToGuess) {
+                    System.out.println("Congratulations! You guessed the number correctly.");
+                    guessedCorrectly = true;
+                    totalWins++;
+                } else if (userGuess < numberToGuess) {
+                    System.out.println("Too low. Try again.");
+                } else {
+                    System.out.println("Too high. Try again.");
+                }
             }
-        } while (choice != 5);
+
+            if (!guessedCorrectly) {
+                System.out.println("Sorry, you've used all your attempts. The correct number was: " + numberToGuess);
+            }
+
+            System.out.println("Do you want to play another round? (yes/no): ");
+            String response = scanner.next();
+            playAgain = response.equalsIgnoreCase("yes");
+            
+        } while (playAgain);
+
+        System.out.println("Game over. You played " + totalRounds + " rounds and won " + totalWins + " times.");
         scanner.close();
-    }
-
-    private void addStudent(Student student) {
-        students.add(student);
-    }
-    private void removeStudent(Student student) {
-        students.remove(student);
-    }
-    private Student searchStudent(int rollNumber) {
-        for (Student student : students) {
-            if (student.getRollNumber() == rollNumber) {
-                return student;
-            }
-        }
-        return null;
-    }
-    private void displayAllStudents() {
-        if (students.isEmpty()) {
-            System.out.println("No students found.");
-        } else {
-            for (Student student : students) {
-                System.out.println(student);
-            }
-        }
     }
 }
